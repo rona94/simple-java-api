@@ -11,6 +11,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.rona.crudapi.repo.TokenRepo;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
 	private final JwtService jwtService;
+	private final TokenRepo tokenRepo;
 	private final UserDetailsService userDetailsService;
 	
 	@Override
@@ -44,8 +47,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-		
-			if(jwtService.isTokenValid(jwt, userDetails)) {
+			// note: need to check if expired
+			var isTokenExist = tokenRepo.findByEmail(username) != null;
+
+			if(jwtService.isTokenValid(jwt, userDetails) && isTokenExist) {
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
 					userDetails,
 					null,
