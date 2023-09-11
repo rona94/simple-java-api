@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rona.crudapi.config.JwtService;
 import com.rona.crudapi.dto.ClassEntity;
 import com.rona.crudapi.dto.ClassScheduleEntity;
+import com.rona.crudapi.dto.DataEntity;
 import com.rona.crudapi.dto.StudentGradeEntity;
 import com.rona.crudapi.dto.UserEntity;
 import com.rona.crudapi.repo.UserRepo;
@@ -37,7 +38,7 @@ public class StudentController {
 	
 	// GET student's grade
 	@GetMapping(value = "/grade")
-	public ResponseEntity<List<StudentGradeEntity>> getStudentGrade(
+	public ResponseEntity<DataEntity> getStudentGrade(
 			@NonNull HttpServletRequest request
 	) {
 		try {
@@ -45,11 +46,22 @@ public class StudentController {
 			final String user = getUser(token);
 			
 			UserEntity userInfo = userRepo.getUserInfo(user);			
-			return ResponseEntity.ok(userRepo.getStudentGrade(userInfo.getId()));
+			
+			DataEntity result = DataEntity.builder()
+										.results(userRepo.getStudentGrade(userInfo.getId()))
+										.status(200)
+										.message("Success")
+										.build();
+			return ResponseEntity.ok(result);
 			
 		}
 		catch(Exception e) {
-			return ResponseEntity.ok(null);
+			DataEntity result = DataEntity.builder()
+									.results(null)
+									.status(500)
+									.message("Error")
+									.build();
+			return ResponseEntity.ok(result);
 		}
 	}	
 	

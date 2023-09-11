@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rona.crudapi.config.JwtService;
 import com.rona.crudapi.dto.ClassScheduleEntity;
+import com.rona.crudapi.dto.DataEntity;
 import com.rona.crudapi.dto.UserEntity;
 import com.rona.crudapi.repo.UserRepo;
 
@@ -34,7 +35,7 @@ public class ScheduleController {
 		
 	// GET student's class info
 	@GetMapping(value = "/schedule")
-	public ResponseEntity<List<ClassScheduleEntity>> getStudentSchedule(
+	public ResponseEntity<DataEntity> getStudentSchedule(
 			@NonNull HttpServletRequest request,
 			@RequestParam(name = "sort", defaultValue = "id") String sort, 
 			@RequestParam(name = "order", defaultValue = "1") int order,
@@ -61,10 +62,22 @@ public class ScheduleController {
 				data = userRepo.getFacultySchedule(userInfo.getId(), paging);
 			}
 			
-			return ResponseEntity.ok(data);
+			DataEntity result = DataEntity.builder()
+									.results(data)
+									.status(200)
+									.message("Success")
+									.build();
+			
+			return ResponseEntity.ok(result);
 		}
 		catch(Exception e) {
-			return ResponseEntity.ok(null);
+			DataEntity result = DataEntity.builder()
+									.results(null)
+									.status(500)
+									.message("Error")
+									.build();
+			
+			return ResponseEntity.ok(result);
 		}
 	}
 	

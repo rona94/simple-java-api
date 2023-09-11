@@ -28,6 +28,19 @@ public interface UserRepo extends JpaRepository<User, Integer>{
 			+ " LIMIT 1", nativeQuery = true)
 	UserEntity getUserInfo(String email);
 	
+	// update user info	
+	@Query(value = ""
+			+ " UPDATE user"
+			+ " SET"
+				+ " firstname = ?3,"
+				+ " lastname = ?4,"
+				+ " age = ?5,"
+				+ " address = ?6,"
+				+ " contact = ?7"
+			+ " WHERE id = ?1", nativeQuery = true)
+	User updateUserInfo(int id, String fName, String lName, int age, String address, String contact);
+	
+	
 	// get student schedule by id
 	@Query(value = ""
 			+ "SELECT"
@@ -86,21 +99,6 @@ public interface UserRepo extends JpaRepository<User, Integer>{
 	///////////////////////////////////////////
 ///////////////////////////////////////////
 ///////////////////////////////////////////
-	
-	
-
-//	// update user info	
-//	@Query(value = ""
-//			+ " UPDATE user"
-//			+ " SET"
-//				+ " firstname = ?3,"
-//				+ " lastname = ?4,"
-//				+ " age = ?5,"
-//				+ " address = ?6,"
-//				+ " contact = ?7"
-//			+ " WHERE id = ?1", nativeQuery = true)
-//	User updateUserInfo(int id, String fName, String lName, int age, String address, String contact);
-//	
 	
 	// get class schedule by student id
 	@Query(value = ""

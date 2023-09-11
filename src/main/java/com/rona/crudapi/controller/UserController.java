@@ -4,11 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rona.crudapi.dto.DataEntity;
 import com.rona.crudapi.dto.UserEntity;
+import com.rona.crudapi.models.User;
 import com.rona.crudapi.repo.UserRepo;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "Authorization")
+@CrossOrigin()
 public class UserController {
 	@Autowired
 	private UserRepo userRepo;
@@ -27,32 +31,42 @@ public class UserController {
 		return ResponseEntity.ok( userRepo.getUserInfo(user) );
 	}
 	
+	// POST update user info
+	@PostMapping(value = "/update")
+	public ResponseEntity<DataEntity> updateUserInfo(@RequestBody User user) {
+		try {
+			User updatedUser = (User) userRepo.findByEmail(user.getEmail());
+			
+			updatedUser.setFirstname(user.getFirstname());
+			updatedUser.setLastname(user.getLastname());
+			updatedUser.setAge(user.getAge());
+			updatedUser.setAddress(user.getAddress());
+			updatedUser.setContact(user.getContact());
+			userRepo.save(updatedUser);
+			
+			DataEntity data = DataEntity.builder()
+					.results(null)
+					.status(200)
+					.message("Info Updated...")
+					.build();
+			return ResponseEntity.ok( data );
+		}
+		catch(Exception e) {
+			DataEntity data = DataEntity.builder()
+					.results(null)
+					.status(500)
+					.message("Error")
+					.build();
+			return ResponseEntity.ok( data );
+		}
+	}
+	
 //	POST save user student
 //	@PostMapping(value = "/add_student")
 //	public String saveUser(@RequestBody User user) {
 //		try {
 //			userRepo.save(user);
 //			return "Student Saved...";
-//		}
-//		catch(Exception e) {
-//			return "Error";
-//		}
-//	}
-	
-//	// POST update user info
-//	@PostMapping(value = "/update_user/{id}")
-//	public String updateUserInfo(@PathVariable int id, @RequestBody User user) {
-//		try {
-//			User updatedUser = (User) userRepo.findAllById(id);
-//			
-//			updatedUser.setFirstname(user.getUsername());
-//			updatedUser.setLastname(user.getLastname());
-//			updatedUser.setAge(user.getAge());
-//			updatedUser.setAddress(user.getAddress());
-//			updatedUser.setContact(user.getContact());
-//			userRepo.save(updatedUser);
-//			
-//			return "Info Updated...";
 //		}
 //		catch(Exception e) {
 //			return "Error";
